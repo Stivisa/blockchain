@@ -10,21 +10,21 @@ func init() {
 }
 
 func main() {
-	blockchainAddress := "blockchain_address"
+	walletMiner := NewWallet()
+	walletA := NewWallet()
+	walletB := NewWallet()
 
-	blockChain := NewBlockchain(blockchainAddress)
-	blockChain.Print()
+	t := NewTransactionWallet(walletA.PrivateKey(), walletA.PublicKey(), walletA.BlockchainAddress(), walletB.BlockchainAddress(), 1.0)
 
-	blockChain.AddTransaction("A", "B", 1.0)
-	blockChain.Mining()
-	blockChain.Print()
+	blockchain := NewBlockchain(walletMiner.BlockchainAddress())
+	isAdded := blockchain.AddTransaction(walletA.BlockchainAddress(), walletB.BlockchainAddress(), 1.0,
+		walletA.PublicKey(), t.GenerateSignature())
+	fmt.Println("Added? ", isAdded)
 
-	blockChain.AddTransaction("C", "D", 2.0)
-	blockChain.AddTransaction("X", "Y", 3.0)
-	blockChain.Mining()
-	blockChain.Print()
+	blockchain.Mining()
+	blockchain.Print()
 
-	fmt.Printf("my %.1f\n", blockChain.CalculateTotalAmount("blockchain_address"))
-	fmt.Printf("C %.1f\n", blockChain.CalculateTotalAmount("C"))
-	fmt.Printf("D %.1f\n", blockChain.CalculateTotalAmount("D"))
+	fmt.Printf("A %.1f\n", blockchain.CalculateTotalAmount(walletA.BlockchainAddress()))
+	fmt.Printf("B %.1f\n", blockchain.CalculateTotalAmount(walletB.BlockchainAddress()))
+	fmt.Printf("M %.1f\n", blockchain.CalculateTotalAmount(walletMiner.BlockchainAddress()))
 }
